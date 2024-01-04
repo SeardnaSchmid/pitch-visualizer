@@ -1,35 +1,65 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:pitch_visualizer/widgets/amplitude_visualization.widget.dart';
+import 'package:pitch_visualizer/widgets/sound_data.widget.dart';
 
-import 'recorder.dart';
+import 'audio_input_controller.dart';
 
-void main() => runApp(const MyApp());
-
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
+void main() {
+  runApp(MyApp());
 }
 
-class _MyAppState extends State<MyApp> {
-  String? audioPath;
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Recorder(
-            onStop: (path) {
-              if (kDebugMode) print('Recorded file path: $path');
-              setState(() {
-                audioPath = path;
-              });
-            },
-          ),
-        ),
-      ),
+    return const MaterialApp(
+      home: MyHomePage(),
     );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key}) : super(key: key);
+
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  
+  late AudioInputController _audioInputController;
+
+  @override
+  void initState() {
+    super.initState();
+    _audioInputController = AudioInputController();
+    _audioInputController.start();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Audio Visualizer'),
+      ),
+      body: Center(
+        child:
+            Column(
+              children: [
+                AmplitudeVisualizer(amplitudeStream: _audioInputController.amplitudeStream),
+                SoundDataStreamWidget(soundDataStream: _audioInputController.soundDataStream),
+              ],
+            ),
+      ),
+      floatingActionButton: const Icon(Icons.mic),
+    );
+  }
+
+  @override
+  void dispose() {
+    _audioInputController.stop();
+    _audioInputController.dispose();
+    super.dispose();
   }
 }
