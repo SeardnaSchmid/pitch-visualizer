@@ -11,8 +11,8 @@ class AudioInputController {
 
   StreamSubscription<RecordState>? _audioRecorderStateSub;
   StreamSubscription<Amplitude>? _amplitudeSub;
-  Stream<List<int>> get soundDataStream => _soundDataStreamController.stream;
-  Stream<Amplitude> get amplitudeStream => _amplitudeStreamController.stream;
+  Stream<List<int>> get soundDataStream => _soundDataStreamController.stream.asBroadcastStream();
+  Stream<Amplitude> get amplitudeStream => _amplitudeStreamController.stream.asBroadcastStream();
 
   AudioInputController() {
     _audioRecorder = AudioRecorder();

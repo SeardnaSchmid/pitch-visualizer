@@ -27,7 +27,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  
   late AudioInputController _audioInputController;
 
   @override
@@ -44,13 +43,15 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('Audio Visualizer'),
       ),
       body: Center(
-        child:
-            Column(
-              children: [
-                AmplitudeVisualizer(amplitudeStream: _audioInputController.amplitudeStream),
-                SoundDataStreamWidget(soundDataStream: _audioInputController.soundDataStream),
-              ],
-            ),
+        child: Column(
+          children: [
+            // AmplitudeVisualizer(
+            //     amplitudeStream: _audioInputController.amplitudeStream),
+            SoundDataStreamWidget(
+                soundDataStream: _audioInputController.soundDataStream,
+                amplitudeStream: _audioInputController.amplitudeStream),
+          ],
+        ),
       ),
       floatingActionButton: const Icon(Icons.mic),
     );
