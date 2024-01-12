@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:pitch_visualizer/widgets/amplitude_visualization.widget.dart';
-import 'package:pitch_visualizer/widgets/sound_data.widget.dart';
+import 'package:pitch_visualizer/widgets/waveform.widget.dart';
 
 import 'audio_input_controller.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -23,10 +22,10 @@ class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  MyHomePageState createState() => MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePageState extends State<MyHomePage> {
   late AudioInputController _audioInputController;
 
   @override
@@ -47,9 +46,10 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             // AmplitudeVisualizer(
             //     amplitudeStream: _audioInputController.amplitudeStream),
-            SoundDataStreamWidget(
-                soundDataStream: _audioInputController.soundDataStream,
-                amplitudeStream: _audioInputController.amplitudeStream),
+            WaveformWidget(stream: _audioInputController.soundDataStream),
+            // SoundDataStreamWidget(
+            //     soundDataStream: _audioInputController.soundDataStream,
+            //     amplitudeStream: _audioInputController.amplitudeStream),
           ],
         ),
       ),

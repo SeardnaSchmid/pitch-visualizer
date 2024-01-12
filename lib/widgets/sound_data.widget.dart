@@ -1,9 +1,11 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:record/record.dart';
 
 class SoundDataStreamWidget extends StatefulWidget {
-  final Stream<List<int>> soundDataStream;
+  final Stream<Uint8List> soundDataStream;
   final Stream<Amplitude> amplitudeStream;
 
   SoundDataStreamWidget(
@@ -17,7 +19,7 @@ class SoundDataStreamWidget extends StatefulWidget {
 }
 
 class _SoundDataStreamWidgetState extends State<SoundDataStreamWidget> {
-  double _maxAmplitudeInitial = -10000;
+  final double _maxAmplitudeInitial = -10000;
   double _maxAmplitude = -10000;
 
   @override
@@ -31,10 +33,10 @@ class _SoundDataStreamWidgetState extends State<SoundDataStreamWidget> {
             amplitudeSnapshot.data!.current.isFinite) {
           _maxAmplitude = amplitudeSnapshot.data!.current;
         }
-        return StreamBuilder<List<int>>(
+        return StreamBuilder<Uint8List>(
           stream: widget.soundDataStream,
           builder:
-              (BuildContext context, AsyncSnapshot<List<int>> soundSnapshot) {
+              (BuildContext context, AsyncSnapshot<Uint8List> soundSnapshot) {
             if (soundSnapshot.hasError || amplitudeSnapshot.hasError) {
               return Text(
                   'Error: ${soundSnapshot.error ?? amplitudeSnapshot.error}');
@@ -54,7 +56,7 @@ class _SoundDataStreamWidgetState extends State<SoundDataStreamWidget> {
                   return Column(
                     children: [
                       Text('Current: ${amplitudeSnapshot.data?.current}'),
-                      Text('Max: ${_maxAmplitude}'),
+                      Text('Max: $_maxAmplitude'),
                       SizedBox(
                         width: 300,
                         height: 160,
@@ -76,7 +78,7 @@ class _SoundDataStreamWidgetState extends State<SoundDataStreamWidget> {
                             _maxAmplitude = _maxAmplitudeInitial;
                           });
                         },
-                        child: Text('Reset Max Amplitude'),
+                        child: const Text('Reset Max Amplitude'),
                       ),
                     ],
                   );

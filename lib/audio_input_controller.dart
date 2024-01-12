@@ -1,18 +1,21 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:record/record.dart';
 
 class AudioInputController {
   late final AudioRecorder _audioRecorder;
 
-  final StreamController<List<int>> _soundDataStreamController =
-      StreamController<List<int>>();
+  final StreamController<Uint8List> _soundDataStreamController =
+      StreamController<Uint8List>();
   final StreamController<Amplitude> _amplitudeStreamController =
       StreamController<Amplitude>();
 
   StreamSubscription<RecordState>? _audioRecorderStateSub;
   StreamSubscription<Amplitude>? _amplitudeSub;
-  Stream<List<int>> get soundDataStream => _soundDataStreamController.stream.asBroadcastStream();
-  Stream<Amplitude> get amplitudeStream => _amplitudeStreamController.stream.asBroadcastStream();
+  Stream<Uint8List> get soundDataStream => _soundDataStreamController.stream;
+  Stream<Amplitude> get amplitudeStream => _amplitudeStreamController.stream;
+  static const int sampleRate = 44100;
+  static const AudioEncoder audioEncoder = AudioEncoder.pcm16bits;
 
   AudioInputController() {
     _audioRecorder = AudioRecorder();
@@ -26,13 +29,12 @@ class AudioInputController {
   }
 
   // Start recording
-  Future<void> start() async {
-    const config =
-        const RecordConfig(encoder: AudioEncoder.pcm16bits, numChannels: 1);
+  start() async {
+    const config = RecordConfig(
+        encoder: audioEncoder, numChannels: 1, sampleRate: sampleRate);
 
-    _audioRecorder.startStream(config).then((stream) {
-      _soundDataStreamController.addStream(stream);
-    });
+    _soundDataStreamController
+        .addStream(await _audioRecorder.startStream(config));
   }
 
   Future<void> stop() async {
