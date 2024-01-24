@@ -4,42 +4,28 @@ import 'package:record/record.dart';
 
 class AudioInputController {
   late final AudioRecorder _audioRecorder;
+  final int sampleRate;
+  final AudioEncoder audioEncoder;
+  final StreamController<Uint8List> soundDataStreamController = StreamController<Uint8List>();
 
-  final StreamController<Uint8List> _soundDataStreamController =
-      StreamController<Uint8List>();
-  final StreamController<Amplitude> _amplitudeStreamController =
-      StreamController<Amplitude>();
+  Stream<Uint8List> get soundDataStream => soundDataStreamController.stream;
 
-  StreamSubscription<RecordState>? _audioRecorderStateSub;
-  StreamSubscription<Amplitude>? _amplitudeSub;
-  Stream<Uint8List> get soundDataStream => _soundDataStreamController.stream;
-  Stream<Amplitude> get amplitudeStream => _amplitudeStreamController.stream;
-  static const int sampleRate = 44100;
-  static const AudioEncoder audioEncoder = AudioEncoder.pcm16bits;
-
-  AudioInputController() {
+  AudioInputController(this.sampleRate, {this.audioEncoder = AudioEncoder.pcm16bits}) {
     _audioRecorder = AudioRecorder();
-    _audioRecorderStateSub =
-        _audioRecorder.onStateChanged().listen((recordState) {});
-    _amplitudeSub = _audioRecorder
-        .onAmplitudeChanged(const Duration(milliseconds: 200))
-        .listen((amplitude) {
-      _amplitudeStreamController.add(amplitude);
-    });
   }
 
   // Start recording
-  start() async {
-    const config = RecordConfig(
+  Future<void> start() async {
+    var config = RecordConfig(
         encoder: audioEncoder, numChannels: 1, sampleRate: sampleRate);
 
-    _soundDataStreamController
+    soundDataStreamController
         .addStream(await _audioRecorder.startStream(config));
   }
 
   Future<void> stop() async {
     await _audioRecorder.stop();
-    _soundDataStreamController.close();
+    soundDataStreamController.close();
   }
 
   Future<void> pause() async {
@@ -53,9 +39,6 @@ class AudioInputController {
   }
 
   void dispose() {
-    _audioRecorderStateSub?.cancel();
-    _amplitudeSub?.cancel();
-    _soundDataStreamController.close();
-    _amplitudeStreamController.close();
+    soundDataStreamController.close();
   }
 }

@@ -1,7 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:pitch_visualizer/widgets/waveform.widget.dart';
 
-import 'audio_input_controller.dart';
+import 'package:collection/collection.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
+import 'package:pitch_visualizer/audio_input_controller.dart';
+import 'dart:typed_data';
+import 'package:mutex/mutex.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -26,31 +30,33 @@ class MyHomePage extends StatefulWidget {
 }
 
 class MyHomePageState extends State<MyHomePage> {
-  late AudioInputController _audioInputController;
+  // late AudioInputController _audioInputController;
 
   @override
   void initState() {
     super.initState();
-    _audioInputController = AudioInputController();
-    _audioInputController.start();
+    // _audioInputController = AudioInputController();
+    // _audioInputController.start();
   }
 
   @override
   Widget build(BuildContext context) {
+    List<double> data = <double>[1,2,3,4,5,6,7,8,9];
+    List<FlSpot> mySpots = data.mapIndexed((index, element) => FlSpot(index.toDouble(), element)).toList();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Audio Visualizer'),
       ),
-      body: Center(
-        child: Column(
-          children: [
-            // AmplitudeVisualizer(
-            //     amplitudeStream: _audioInputController.amplitudeStream),
-            WaveformWidget(stream: _audioInputController.soundDataStream),
-            // SoundDataStreamWidget(
-            //     soundDataStream: _audioInputController.soundDataStream,
-            //     amplitudeStream: _audioInputController.amplitudeStream),
+      body: LineChart(
+        LineChartData(
+          lineBarsData: [
+            LineChartBarData(
+              spots: mySpots,
+            )
           ],
+          maxY: 50,
+          minY: 0
         ),
       ),
       floatingActionButton: const Icon(Icons.mic),
@@ -59,8 +65,8 @@ class MyHomePageState extends State<MyHomePage> {
 
   @override
   void dispose() {
-    _audioInputController.stop();
-    _audioInputController.dispose();
+    // _audioInputController.stop();
+    // _audioInputController.dispose();
     super.dispose();
   }
 }
